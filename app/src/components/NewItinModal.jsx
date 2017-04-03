@@ -12,7 +12,6 @@ class NewItinModal extends Component {
     }
     // function binds
     this.close = this.close.bind(this);
-    this.onChange = this.onChange.bind(this);
     this.handleInputchange = this.handleInputchange.bind(this);
     this.addUserItinerary = this.addUserItinerary.bind(this);
   }
@@ -42,6 +41,7 @@ class NewItinModal extends Component {
       isActive: 1,
       isPublic: 0,
     }
+    console.log(itinData)
     axios.post('http://localhost:3000/itineraries', itinData)
       .then((res) => {
         itinData.created_at = res.data.created_at.substring(0,10)

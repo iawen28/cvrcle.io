@@ -17,24 +17,41 @@ const Entry = require('./models/Entry');
 module.exports = (app) => {
   app.get('/users', (req, res, next) => {
     User
-      .query()
-      .allowEager('[itineraries, entries]')
-      .eager(req.query.eager)
-      .skipUndefined()
-      .where('firstName', req.query.firstName)
-      .where('lastName', req.query.lastName)
-      .where('fbID', req.query.fbID)
-      .where('id', req.query.id)
-      .then((users) => { res.send(users); })
-      .catch(next);
+    .query()
+    .allowEager('[itineraries, entries]')
+    .eager(req.query.eager)
+    .skipUndefined()
+    .where('firstName', req.query.firstName)
+    .where('lastName', req.query.lastName)
+    .where('fbID', req.query.fbID)
+    .where('email', req.query.email)
+    .where('gID', req.query.gID)
+    .where('id', req.query.id)
+    .where('picture', req.query.picture)
+    .then((users) => { 
+      res.send(users); 
+    })
+    .catch(next);
   })
 
   app.post('/users', (req, res, next) => {
     User
-      .query()
-      .insertAndFetch(req.body)
-      .then((user) => { res.send(user) })
-      .catch(next);
+    .query()
+    .insertAndFetch(req.body)
+    .then((user) => { res.send(user) })
+    .catch(next);
+  })
+
+  app.patch('/users', (req, res, next) => {
+    console.log(req.body, req.query);
+    User
+    .query()
+    .patch({gID: req.body.gID, fbID: req.body.fbID})
+    .where('email', req.query.email)
+    .then((rows) => {
+      res.send(rows + ' row(s) affected');
+    })
+    .catch(next);
   })
 
   app.get('/entries', (req, res, next) => {
@@ -42,11 +59,11 @@ module.exports = (app) => {
       // we can add 'where' logic to filter and query results
       .query()
       .skipUndefined()
-      .where('itinID', req.query.itinID)
+      .where('itinID', (parseInt(req.query.itinID) || req.query.itinID))
       .where('contributorID', req.query.contributorID)
       .then((entries) => { res.send(entries); })
       .catch(next);
-  })
+    })
 
   app.post('/entries', (req, res, next) => {
     let fitinID = parseInt(req.body.itinID);
@@ -64,30 +81,30 @@ module.exports = (app) => {
       lng: flng
     }
     Entry
-      .query()
-      .insertAndFetch(formattedEntry)
-      .then((entry) => { res.send(entry) })
-      .catch(next);
+    .query()
+    .insertAndFetch(formattedEntry)
+    .then((entry) => { res.send(entry) })
+    .catch(next);
   })
 
   app.delete('/entries', (req, res, next) => {
     Entry
-      .query()
-      .where('itinID', req.query.itinID)
-      .where('id', req.query.id)
-      .deleteById(req.query.id)
-      .then((deleted) => { res.send(202, deleted); })
-      .catch(next);
+    .query()
+    .where('itinID', req.query.itinID)
+    .where('id', req.query.id)
+    .deleteById(req.query.id)
+    .then((deleted) => { res.send(202, deleted); })
+    .catch(next);
   })
 
   app.delete('/itineraries', function (req, res, next) {
     Itinerary
-      .query()
-      .where('ownerID', req.query.ownerID)
-      .where('id', req.query.id)
-      .deleteById(req.query.id)
-      .then((deleted) => { res.send(200, deleted); })
-      .catch(next);
+    .query()
+    .where('ownerID', req.query.ownerID)
+    .where('id', req.query.id)
+    .deleteById(req.query.id)
+    .then((deleted) => { res.send(200, deleted); })
+    .catch(next);
   });
 
   app.get('/itineraries', (req, res, next) => {
@@ -101,14 +118,21 @@ module.exports = (app) => {
       .where('ownerID', req.query.ownerID)
       .then((itineraries) => { res.send(itineraries); })
       .catch(next);
-  })
+    })
 
   app.post('/itineraries', (req, res, next) => {
+    let fisActive = parseInt(req.body.isActive);
+    let fisPublic = parseInt(req.body.isPublic);
+    let formattedEntry = {
+      isActive: fisActive,
+      isPublic: fisPublic,
+      itinName: req.body.itinName,
+      ownerID: req.body.ownerID
+    }
     Itinerary
-      .query()
-      .insertAndFetch(req.body)
-      .then((itinerary) => { res.send(itinerary)})
-      .catch(next);
+    .query()
+    .insertAndFetch(formattedEntry)
+    .then((itinerary) => { res.send(itinerary)})
+    .catch(next);
   })
-
 };

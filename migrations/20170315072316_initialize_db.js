@@ -6,8 +6,10 @@ exports.up = function(knex, Promise) {
       table.increments('id').primary();
       table.string('firstName', 20);
       table.string('lastName', 20);
-      table.string('email', 25);
+      table.string('email', 40);
       table.string('fbID');
+      table.string('gID');
+      table.string('picture');
       table.timestamps(true);
     })
     .createTable('itineraries', (table) => {
@@ -24,7 +26,7 @@ exports.up = function(knex, Promise) {
       table.text('body', 'mediumtext');
       table.decimal('lat', 24, 12);
       table.decimal('lng', 24, 12);
-      table.string('name', 60);
+      table.string('name', 100);
       table.string('address', 80);
       table.integer('contributorID').unsigned().references('id').inTable('users').onDelete('CASCADE');
       table.integer('itinID').unsigned().references('id').inTable('itineraries').onDelete('CASCADE');

@@ -42,6 +42,14 @@
   height: 45px;
 }
 
+.calendarLink {
+  float: right;
+}
+
+.calendarLink:hover {
+  color: teal;
+}
+
 .container > .navbar-header {
   float: left;
   font-size: 18px;

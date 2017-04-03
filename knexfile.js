@@ -1,4 +1,5 @@
 // Update with your config settings.
+
 const dotenv = require('dotenv');
 dotenv.load();
 
@@ -7,10 +8,10 @@ module.exports = {
   development: {
     client: 'mysql',
     connection: {
-      host: process.env.MYSQL_URI,
-      database: process.env.MYSQL_DEV_DB,
-      user: process.env.MYSQL_MASTER_USER,
-      password: process.env.MYSQL_MASTER_PASS
+      host: 'localhost',
+      database: 'cvrcle',
+      user: 'root',
+      password: 'lameme'
     },
     pool: {
       min: 1,

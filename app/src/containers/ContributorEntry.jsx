@@ -21,13 +21,14 @@ class ContributorEntry extends Component {
     this.updateEntry = this.updateEntry.bind(this);
     this.updateState = this.updateState.bind(this);
     this.end = this.end.bind(this);
+    this.calendar = this.calendar.bind(this);
   }
 
   componentDidMount() {
     this.updateState();
     if (this.props.isAuthenticated) {
-      let fbID = this.props.profile.user_id
-      let id = fbID.split('|')
+      let authID = this.props.profile.user_id
+      let id = authID.split('|')
       axios.get(`http://localhost:3000/users?id=${this.props.contributorID}`)
         .then((res) => {
           let tmp = res.data[0]["id"]
@@ -58,6 +59,50 @@ class ContributorEntry extends Component {
     })
   }
 
+  calendar() {
+    var event = {
+      'summary': 'example',
+      'location': '800 Howard St., San Francisco, CA 94103',
+      'description': 'A chance to hear more about Google\'s developer products.',
+      'start': {
+        'dateTime': '2017-05-28T09:00:00-07:00',
+        'timeZone': 'America/Los_Angeles'
+      },
+      'end': {
+        'dateTime': '2017-05-28T17:00:00-07:00',
+        'timeZone': 'America/Los_Angeles'
+      },
+      'attendees': [
+        {'email': 'lpage@example.com'},
+        {'email': 'sbrin@example.com'}
+      ],
+      'reminders': {
+        'useDefault': false,
+        'overrides': [
+          {'method': 'email', 'minutes': 24 * 60},
+          {'method': 'popup', 'minutes': 10}
+        ]
+      }
+    };
+
+    console.log("GAPI: ", gapi);
+    gapi.auth2.getAuthInstance().signIn();
+    var request = gapi.client.calendar.events.insert({
+      'calendarId': 'primary',
+      'resource': event
+    });
+
+    request.execute(function(event) {
+      console.log("GOT HERE")
+      appendPre('Event created: ' + event.htmlLink);
+    }).then(function () {
+      // Listen for sign-in state changes.
+      gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+      // Handle the initial sign-in state.
+      updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+    })
+  }
+
   updateEntry(incomingData) {
     this.setState({
       title: incomingData.title,
@@ -77,8 +122,8 @@ class ContributorEntry extends Component {
         {this.state.isEditing ? 
           <EditModal resetFlag={this.toggleModal} updateEntry={this.updateEntry} data={this.state}/> 
           : "" }
-        <Card id={this.state.id} color="teal" className="entry" onClick={this.toggleModal}>
-          <Card.Content>
+        <Card id={this.state.id} color="teal" className="entry">
+          <Card.Content onClick={this.toggleModal}>
             <span 
               className="remove-btn glyphicon glyphicon-remove" id={this.state.id} 
               onClick={(e) => {this.props.deleteEntry(this.state); this.end(e)}}>
@@ -94,7 +139,8 @@ class ContributorEntry extends Component {
             </Card.Description>
           </Card.Content>
           <Card.Content extra>
-            <span className="author">Contributed By: {this.state.author}</span>
+            <span className="author">Contributed by: {this.state.author}</span>
+            <span onClick={this.calendar} className="calendarLink"> Add to Google Calendar </span>
             <span className="date">{this.state.date}</span>
           </Card.Content>
         </Card>

@@ -43,7 +43,7 @@ class Itinerary extends Component {
     return (false);
   }
 
-  // request to databse for the specific itinerary then
+  // request to database for the specific itinerary then
   // sets state for entries to pass down to GoogleMap and ContributorEntry
   getUserEntries() {
     axios.get('http://localhost:3000/entries?itinID=' + this.itinID)

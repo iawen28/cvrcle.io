@@ -36,6 +36,7 @@ registerApi(app);
 // catch all errors up front and use next() cleverly
 app.use((err, req, res, next) => {
   if (err) {
+    console.log(err);
     res.status(err.statusCode || err.status || 500).send(err.data || err.message || {});
   } else {
     next();
